@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Audit Report — 8 Products</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg:       #07090f;
+    --bg2:      #0d1117;
+    --bg3:      #161b22;
+    --bg4:      #1c2230;
+    --border:   #21262d;
+    --border2:  #30363d;
+    --text:     #c9d1d9;
+    --text2:    #8b949e;
+    --text3:    #f0f6fc;
+    --critical: #ff2d2d;
+    --high:     #ff7c35;
+    --medium:   #ffd166;
+    --low:      #06d6a0;
+    --info:     #58a6ff;
+    --accent:   #e63946;
+    --mono:     'JetBrains Mono', monospace;
+    --sans:     'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* ─── LAYOUT ─── */
+  .layout {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 24px 0;
+  }
+
+  .sidebar-logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo .logo-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .sidebar-logo .logo-title {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text3);
+  }
+
+  .sidebar-logo .logo-sub {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+
+  .nav-section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text2);
+    padding: 10px 20px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text2);
+    font-size: 13px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: var(--bg3);
+    color: var(--text3);
+    border-left-color: var(--accent);
+  }
+
+  .nav-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ─── MAIN ─── */
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 48px 56px;
+    max-width: 1000px;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    margin-bottom: 64px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-eyebrow::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .hero-title {
+    font-family: var(--mono);
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text3);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .hero-title span {
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--text2);
+    margin-bottom: 32px;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .meta-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+
+  .meta-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text3);
+    font-weight: 600;
+  }
+
+  /* ─── SUMMARY GRID ─── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 64px;
+  }
+
+  .stat-card {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .stat-card.critical::before { background: var(--critical); }
+  .stat-card.high::before     { background: var(--high); }
+  .stat-card.medium::before   { background: var(--medium); }
+  .stat-card.low::before      { background: var(--low); }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-card.critical .stat-num { color: var(--critical); }
+  .stat-card.high .stat-num     { color: var(--high); }
+  .stat-card.medium .stat-num   { color: var(--medium); }
+  .stat-card.low .stat-num      { color: var(--low); }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+
+  /* ─── PRODUCT SECTIONS ─── */
+  .product-section {
+    margin-bottom: 72px;
+  }
+
+  .product-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .product-name {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+
+  .product-version {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .product-type {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text2);
+    background: var(--bg4);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 3px 10px;
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+
+  /* ─── VULN CARD ─── */
+  .vuln-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .vuln-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .vuln-header:hover {
+    background: var(--bg4);
+  }
+
+  .vuln-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .vuln-title {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text3);
+  }
+
+  .badge {
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+  }
+
+  .badge-critical { background: rgba(255,45,45,0.15);   color: var(--critical); border: 1px solid rgba(255,45,45,0.3); }
+  .badge-high     { background: rgba(255,124,53,0.15);  color: var(--high);     border: 1px solid rgba(255,124,53,0.3); }
+  .badge-medium   { background: rgba(255,209,102,0.12); color: var(--medium);   border: 1px solid rgba(255,209,102,0.3); }
+  .badge-low      { background: rgba(6,214,160,0.12);   color: var(--low);      border: 1px solid rgba(6,214,160,0.3); }
+
+  .chevron {
+    color: var(--text2);
+    font-size: 12px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .vuln-card.open .chevron {
+    transform: rotate(180deg);
+  }
+
+  .vuln-body {
+    display: none;
+    padding: 20px 24px;
+  }
+
+  .vuln-card.open .vuln-body {
+    display: block;
+  }
+
+  /* body content */
+  .field-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 8px 16px;
+    margin-bottom: 6px;
+    align-items: start;
+  }
+
+  .field-key {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text2);
+    padding-top: 2px;
+  }
+
+  .field-val {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .code-snippet {
+    background: #0a0e1a;
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    overflow-x: auto;
+  }
+
+  .code-snippet pre {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #c9d1d9;
+    white-space: pre;
+    line-height: 1.6;
+  }
+
+  .vuln-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  .fix-box {
+    background: rgba(6,214,160,0.06);
+    border: 1px solid rgba(6,214,160,0.2);
+    border-radius: 5px;
+    padding: 12px 16px;
+    margin-top: 12px;
+  }
+
+  .fix-box .fix-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--low);
+    margin-bottom: 6px;
+  }
+
+  .fix-box p {
+    font-size: 13px;
+    color: #c9d1d9;
+    line-height: 1.65;
+  }
+
+  code {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #ffa657;
+  }
+
+  /* ─── FOOTER ─── */
+  .report-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ─── scrollbar ─── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-label">Security Report</div>
+    <div class="logo-title">Vulnerability<br>Audit 2026</div>
+    <div class="logo-sub">8 produkt · 50+ zaiflik</div>
+  </div>
+
+  <div class="nav-section-label">Produktlar</div>
+
+  <a href="#pluck" class="nav-item">
+    <span class="nav-dot" style="background:#ff2d2d"></span>PluckCMS 4.7.21
+  </a>
+  <a href="#weasel" class="nav-item">
+    <span class="nav-dot" style="background:#ff7c35"></span>WeaselCMS 0.3.6
+  </a>
+  <a href="#cf7" class="nav-item">
+    <span class="nav-dot" style="background:#ff7c35"></span>Contact Form 7 v6.1.6
+  </a>
+  <a href="#ninja" class="nav-item">
+    <span class="nav-dot" style="background:#ff7c35"></span>Ninja Forms 3.14.5
+  </a>
+  <a href="#cforge" class="nav-item">
+    <span class="nav-dot" style="background:#ffd166"></span>Content-Forge 1.5.0
+  </a>
+  <a href="#django" class="nav-item">
+    <span class="nav-dot" style="background:#ff2d2d"></span>Django CMS 5.1.0a1
+  </a>
+  <a href="#fluent" class="nav-item">
+    <span class="nav-dot" style="background:#ff7c35"></span>Fluent Forms 6.2.3
+  </a>
+  <a href="#wpfm" class="nav-item">
+    <span class="nav-dot" style="background:#ff2d2d"></span>WP File Manager 8.0.4
+  </a>
+</nav>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Static Source Code Analysis</div>
+    <h1 class="hero-title">Vulnerability<br><span>Audit Report</span></h1>
+    <p class="hero-sub">
+      8 ta open-source va WordPress produkt manba kodi tekshirildi. Quyidagi hisobotda faqat manba kodida tasdiqlangan zaifliklar keltirilgan. Oldingi CVE'lar bilan bir xil bo'lgan topilmalar kiritilmagan.
+    </p>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Sana</span>
+        <span class="meta-value">2026-06-14</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Metod</span>
+        <span class="meta-value">SAST (White-box)</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Produktlar</span>
+        <span class="meta-value">8 ta</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Jami zaiflik</span>
+        <span class="meta-value">50+</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="summary-grid">
+    <div class="stat-card critical">
+      <div class="stat-num">7</div>
+      <div class="stat-label">Critical</div>
+    </div>
+    <div class="stat-card high">
+      <div class="stat-num">16</div>
+      <div class="stat-label">High</div>
+    </div>
+    <div class="stat-card medium">
+      <div class="stat-num">22</div>
+      <div class="stat-label">Medium</div>
+    </div>
+    <div class="stat-card low">
+      <div class="stat-num">7</div>
+      <div class="stat-label">Low / Info</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       1. PLUCK CMS
+  ══════════════════════════════════════ -->
+  <div class="product-section" id="pluck">
+    <div class="product-header">
+      <div>
+        <div class="product-name">PluckCMS</div>
+        <div class="product-version">v4.7.21-dev · PHP · Flat-file CMS</div>
+      </div>
+      <div class="product-type">PHP CMS</div>
+    </div>
+
+    <!-- VULN 1 -->
+    <div class="vuln-card open">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-critical">Critical</span>
+          <span class="vuln-title">Arbitrary File Write via Module Installer — Path Traversal → RCE</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>data/inc/modules_install.php</code> — satrlar 43, 56</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">8.8 (AV:N/AC:L/PR:H/UI:N/S:C/C:H/I:H/A:H)</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Modul o'rnatuvchi <code>$_FILES['sendfile']['name']</code> ni hech qanday sanitizatsiyasiz to'g'ridan-to'g'ri <code>copy()</code> ga uzatadi. <code>security.php</code> faqat <code>$_GET</code> parametrlarini tekshiradi, <code>$_FILES['name']</code> ni emas. Natijada <code>filename=../../../shell.php</code> bilan web root ga PHP fayl yozish mumkin.</span></div>
+        <div class="code-snippet"><pre>$filename = $_FILES['sendfile']['name'];  // ← sanitizatsiya yo'q
+copy($_FILES['sendfile']['tmp_name'], $dir.'/'.$filename);  // ← path traversal!</pre></div>
+        <div class="field-row"><span class="field-key">Ta'sir</span><span class="field-val">To'liq Remote Code Execution — web server foydalanuvchisi sifatida ixtiyoriy buyruq bajarish.</span></div>
+        <hr class="vuln-divider">
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>basename()</code> va regex sanitizatsiya qo'llash: <code>$filename = basename($_FILES['sendfile']['name']); $filename = preg_replace('/[^a-zA-Z0-9._-]/', '', $filename);</code></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VULN 2 -->
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-critical">Critical</span>
+          <span class="vuln-title">CSRF Protection Bypass — NULL Referer Returns TRUE</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>data/inc/functions.admin.php</code> — <code>requestedByTheSameDomain()</code>, satr 671</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">8.1 (AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H)</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">CSRF himoyasi faqat <code>HTTP_REFERER</code> headeriga asoslangan. Header <code>NULL</code> bo'lganda (to'g'ridan-to'g'ri POST so'rov) funksiya <code>true</code> qaytaradi — himoya o'chiriladi. CSRF token umuman yo'q.</span></div>
+        <div class="code-snippet"><pre>} elseif ($myDomain == NULL || $requestsSource == NULL) {
+    show_error('Be careful...', 1);
+    return true;  // ← CSRF himoya o'chirildi!
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Synchronizer token pattern joriy qilish. Har bir state-changing so'rovda sessiyada saqlangan tasodifiy token tekshirilishi shart. HTTP_REFERER fallback to'liq olib tashlansin.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VULN 3 -->
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">File Upload Extension Blacklist Bypass</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>data/inc/files.php</code> — satr 43-46</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.2</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Fayl kengaytmasi blacklist asosida tekshiriladi. Faqat oxirgi 4-5 belgi tekshiriladi. <code>.php8</code>, <code>.shtml</code>, <code>.php.jpg</code> kabi kengaytmalar ro'yxatda yo'q.</span></div>
+        <div class="code-snippet"><pre>$blockedExtentions = array('.php','php3','php4','php5','php6','php7','phtml',
+  '.phtm','.pht','.ph3','.ph4','.ph5','.asp','.cgi','.phar');
+// .php8 YO'Q — server bajarishi mumkin!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Blacklist o'rniga strict whitelist qo'llash: faqat ruxsat berilgan kengaytmalar ro'yxatini aniqlash. Hamma boshqa kengaytmalar rad etilsin.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VULN 4 -->
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">Email Header Injection — Contact Form</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>data/modules/contactform/contactform.site.php</code> — satrlar 35-40</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">6.5</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>$sender</code> va <code>$name</code> maydonlaridan faqat <code>\r\n</code> ketma-ketligi tozalanadi. Alohida <code>\n</code> yoki <code>\r</code> belgilari o'tib ketadi va email headeriga inject qilinishi mumkin.</span></div>
+        <div class="code-snippet"><pre>if(strpos($sender, "\r\n"))
+    $sender = substr($sender, 0, strpos($sender, "\r\n"));
+// \n va \r alohida tekshirilmaydi!
+$extra_headers = 'From: =?utf-8?B?'.base64_encode($name).'?= <'.$sender.'>'.</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Barcha newline belgilarini tozalash: <code>str_replace(["\r", "\n"], '', $sender)</code>. Email validatsiya uchun <code>filter_var($email, FILTER_VALIDATE_EMAIL)</code> qo'llash.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VULN 5 -->
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">PharData tar.gz Extraction — Path Traversal</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>data/inc/modules_install.php</code>, <code>data/inc/themeinstall.php</code></span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.2</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>.tar.gz</code> fayllari uchun <code>PharData::extractTo()</code> ishlatiladi. UnZIP klassidan farqli, PharData path traversal tekshiruvi qilmaydi. <code>../../shell.php</code> kabi yo'llar bilan fayllar web root ga yozilishi mumkin.</span></div>
+        <div class="code-snippet"><pre>$phar = new PharData($dir."/".$filename);
+$phar->decompress();
+$pharTar = new PharData($dir."/".$tarFile);
+$pharTar->extractTo($dir);  // ← path traversal tekshiruvi yo'q!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Arxivdan chiqarishdan oldin barcha entry yo'llarini tekshirish. <code>realpath()</code> orqali chiqarilayotgan fayl maqsadli papka ichida ekanligini tasdiqlash.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VULN 6 -->
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">Stored XSS — Page Content (Admin → Visitor)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>data/inc/functions.all.php</code> — <code>sanitizePageContent()</code>, satr 218</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">4.8</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>sanitize()</code> funksiyasi <code>&lt;</code> va <code>&gt;</code> ni tozalaydi, lekin <code>sanitizePageContent()</code> qilmaydi. Sahifa kontenti raw HTML sifatida saqlanadi. Admin JavaScript kodi kiritib, tashrif buyuruvchilarning cookie'larini o'g'irlashi mumkin.</span></div>
+        <div class="code-snippet"><pre>function sanitizePageContent($var, $html = true) {
+    $var = str_replace('\\', '\\\\', $var);
+    $var = str_replace("'", "\\'", $var);
+    // < va > TEKSHIRILMAYDI!
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Content Security Policy (CSP) header qo'shish. HTMLPurifier kabi strict HTML sanitizer ishlatish.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VULN 7 -->
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">Brute-Force Protection Bypass — IP-Only Rate Limiting</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>login.php</code> — satrlar 59, 64-65</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Brute-force himoyasi faqat <code>REMOTE_ADDR</code> (IP) ga asoslangan. Har xil IP dan (botnet, Tor, VPN) har safar yangi urinish sanaladi. Lockout muddati 300 sekund (5 daqiqa) — distributed slow brute-force uchun yetarli emas.</span></div>
+        <div class="code-snippet"><pre>define('LOGIN_ATTEMPT_FILE', 'data/settings/loginattempt_'
+    .hash('sha512', $_SERVER['REMOTE_ADDR']).'.php');
+$timestamp = $timestamp + 300;  // 5 daqiqa lockout</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Hisob darajasida lockout (IP emas), 3 urinishdan keyin CAPTCHA, server darajasida fail2ban integratsiyasi.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VULN 8 -->
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-low">Low</span>
+          <span class="vuln-title">Version Disclosure via HTML Meta Tag</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>data/inc/functions.site.php</code> — <code>theme_meta()</code>, satr 111</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Har bir ommaviy sahifada CMS versiyasi HTML <code>&lt;head&gt;</code> da ko'rsatiladi. Tajovuzkorlar darhol versiyani aniqlash va ma'lum exploitlarni qidirish imkoniyatiga ega bo'ladi.</span></div>
+        <div class="code-snippet"><pre>&lt;meta name="generator" content="pluck 4.7.21 dev" /&gt;</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Production deploymentda generator meta tegini o'chirish yoki yashirish.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       2. WEASEL CMS
+  ══════════════════════════════════════ -->
+  <div class="product-section" id="weasel">
+    <div class="product-header">
+      <div>
+        <div class="product-name">WeaselCMS</div>
+        <div class="product-version">v0.3.6 · PHP · Minimal CMS</div>
+      </div>
+      <div class="product-type">PHP CMS</div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">Arbitrary File Deletion via Path Traversal</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>weasel-cms/index.php</code> — satrlar 108-114</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.1 (AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:H/A:H)</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>realpath()</code> faqat base papkaga qo'llaniladi, <code>$_GET['file']</code> ga emas. Natijada <code>?file=../weasel-cms/config.php</code> kabi so'rov bilan ixtiyoriy fayl o'chirilishi mumkin. <code>data.dat</code> o'chirilsa barcha CMS kontenti, <code>config.php</code> o'chirilsa admin panel ishdan chiqadi.</span></div>
+        <div class="code-snippet"><pre>$the_file = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . $_c['files_folder'])
+          . DIRECTORY_SEPARATOR . $_GET['file'];  // ← sanitizatsiya yo'q
+if ( file_exists($the_file) ) {
+    unlink($the_file);  // ← traversal bilan ixtiyoriy fayl o'chiriladi
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>basename($_GET['file'])</code> ishlatib path komponentlarini olib tashlash. Keyin <code>realpath()</code> orqali natija base papka ichida ekanligini tasdiqlash.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">Stored XSS — Ommaviy Sahifalar (3 bosqichli zanjir)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayllar</span><span class="field-val"><code>weasel-cms/index.php:152-153</code>, <code>weasel.php:70</code>, <code>theme/weasel/index.html:67-70</code></span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.4</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Sahifa sarlavhasi va mazmuni sanitizatsiyasiz DB ga saqlanadi (1-bosqich). Parsedown <code>setMarkupEscaped(true)</code> chaqirilmagan (2-bosqich). Shablon <code>htmlspecialchars</code> ishlatmaydi (3-bosqich). Natijada saqlanган JavaScript saytga tashrif buyuruvchi barcha foydalanuvchilarda ishlaydi.</span></div>
+        <div class="code-snippet"><pre>// 1. Saqlash — sanitizatsiya yo'q:
+$data['title'] = $_POST['page-title'];
+$data['content'] = $_POST['page-content'];
+
+// 2. Parsedown — inline HTML bloklanmaydi:
+protected $markupEscaped;  // NULL = false
+
+// 3. Chiqarish — escape yo'q:
+&lt;?= $_CMS['page']['title']; ?&gt;
+&lt;?= $_CMS['page']['content']; ?&gt;</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Saqlashda: <code>htmlspecialchars($_POST['page-title'], ENT_QUOTES, 'UTF-8')</code>. Parsedown: <code>Parsedown::instance()->setMarkupEscaped(true)</code>. Chiqarishda: <code>&lt;?= htmlspecialchars($_CMS['page']['title'], ENT_QUOTES, 'UTF-8'); ?&gt;</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       3. CONTACT FORM 7
+  ══════════════════════════════════════ -->
+  <div class="product-section" id="cf7">
+    <div class="product-header">
+      <div>
+        <div class="product-name">Contact Form 7</div>
+        <div class="product-version">v6.1.6 · WordPress Plugin · 5M+ o'rnatish</div>
+      </div>
+      <div class="product-type">WordPress Plugin</div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">Nonce Verification — Default FALSE (CSRF Unprotected)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>wp-contact-form-7.php</code> — satr 55-56</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.1</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>WPCF7_VERIFY_NONCE</code> sukut bo'yicha <code>false</code>. Nonce tekshiruvi faqat login qilgan foydalanuvchilar uchun ishlaydi. Anonim foydalanuvchilar uchun CSRF himoyasi umuman yo'q — cross-site so'rovlar orqali shakllar submit qilinishi, spam va flood hujumlar amalga oshirilishi mumkin.</span></div>
+        <div class="code-snippet"><pre>if ( ! defined( 'WPCF7_VERIFY_NONCE' ) ) {
+    define( 'WPCF7_VERIFY_NONCE', false );  // ← DEFAULT FALSE!
+}
+// Natijada:
+if ( $this->nonce_is_active() and is_user_logged_in() ) {
+    // faqat login bo'lganda nonce yaratiladi
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>wp-config.php</code> ga <code>define('WPCF7_VERIFY_NONCE', true);</code> qo'shish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">File Extension Blocklist — .phar va .htaccess Bloqlanmagan</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/formatting.php</code> — satr 310</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Antiscript regex faqat ma'lum kengaytmalarni bloklaydi. <code>.phar</code> (PHP Archive), <code>.shtml</code> (SSI) va <code>.htaccess</code> regex'da yo'q. Server <code>.phar</code> fayllarni PHP sifatida bajarsa, RCE mumkin.</span></div>
+        <div class="code-snippet"><pre>$script_pattern = '/^(php|phtml|pl|py|rb|cgi|asp|aspx)\d?$/i';
+// .phar — tekshirilmaydi!
+// .htaccess — tekshirilmaydi!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Patternni kengaytirish: <code>/^(php\d?|phtml|phar|pl|py|rb|cgi|asp|aspx|shtml|htaccess)$/i</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">REST API Feedback Endpoint — Unauthenticated Access (Spam/DoS)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/rest-api.php</code> — satr 113</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>/wp-json/contact-form-7/v1/contact-forms/{id}/feedback</code> endpointi <code>__return_true</code> bilan ochiq. Plugin darajasida rate limiting yo'q. Bot minglab spam xabar yuborishi yoki admin emailini flood qilishi mumkin.</span></div>
+        <div class="code-snippet"><pre>'permission_callback' => '__return_true',  // ← HAMMA KIRISHI MUMKIN!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Rate limiting qo'shish, CAPTCHA majburiy qilish yoki nonce tekshiruvini yoqish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">Email Header Injection — Additional Headers (Qisman Himoya)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/mail.php</code></span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>additional_headers()</code> metodi foydalanuvchi kiritgan ma'lumotlarni header ichiga qo'shadi. <code>\r\n → \n</code> almashtirish amalga oshiriladi, lekin to'liq sanitizatsiya yo'q. URL encoding orqali bypass mumkin.</span></div>
+        <div class="code-snippet"><pre>$line = $this->replace_tags( $line );  // ← user input qo'shiladi
+$line = str_replace( "\r\n", "\n", $line );  // qisman himoya</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Barcha newline belgilarini tozalash va header qiymatlarini to'liq sanitize qilish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-low">Low</span>
+          <span class="vuln-title">wp_redirect() vs wp_safe_redirect() — Open Redirect</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/integration.php</code> — satr 286</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>wp_safe_redirect()</code> o'rniga <code>wp_redirect()</code> ishlatilgan. <code>sanitize_url()</code> faqat URL formatini tekshiradi, tashqi domenga yo'naltirishni bloklamaydi.</span></div>
+        <div class="code-snippet"><pre>if ( wp_redirect( sanitize_url( $endpoint ) ) ) {  // ← wp_safe_redirect kerak!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>wp_safe_redirect()</code> ga o'tish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-low">Low</span>
+          <span class="vuln-title">Capability Defaults — edit_posts (Author Level Access)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>wp-contact-form-7.php</code> — satrlar 47-52</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">CF7 admin funksiyalariga kirish uchun <code>edit_posts</code> (Author darajasi) yetarli. Oddiy muallif foydalanuvchilar forma sozlamalarini ko'rishi mumkin.</span></div>
+        <div class="code-snippet"><pre>define( 'WPCF7_ADMIN_READ_CAPABILITY', 'edit_posts' );  // Author roli!
+define( 'WPCF7_ADMIN_READ_WRITE_CAPABILITY', 'publish_pages' );  // Editor roli!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>define('WPCF7_ADMIN_READ_CAPABILITY', 'manage_options');</code> ga o'zgartirish.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       4. NINJA FORMS
+  ══════════════════════════════════════ -->
+  <div class="product-section" id="ninja">
+    <div class="product-header">
+      <div>
+        <div class="product-name">Ninja Forms</div>
+        <div class="product-version">v3.14.5 · WordPress Plugin · 397 PHP fayl</div>
+      </div>
+      <div class="product-type">WordPress Plugin</div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">Stored XSS — HTML Field Import (extraChecksOff Bypass)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/Admin/Processes/ImportForm.php</code> — satrlar 111-114</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.2</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>extraChecksOff</code> parametri <code>"false"</code> (string) bo'lmasa sanitizatsiya o'tkazib yuboriladi. <code>html</code> type field uchun raw JavaScript saqlanadi va boshqa adminlar/foydalanuvchilar brauzerida ishlaydi.</span></div>
+        <div class="code-snippet"><pre>if( ( isset($_POST['extraData']['extraChecksOff']) &&
+      $_POST['extraData']['extraChecksOff'] === "false" )
+    || WPN_Helper::maybe_disallow_unfiltered_html_for_sanitization() )
+{
+    $data = $this->sanitize_field_settings($data);
+}
+// extraChecksOff o'rnatilmasa — sanitizatsiya o'tkazilmaydi!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>HTML field importida har doim <code>wp_kses_post()</code> qo'llash. <code>extraChecksOff</code> parametriga bog'liq bo'lmasin.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">Unprepared SQL — Submission Limit Check</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/AJAX/Controllers/Submission.php</code> — satrlar 355-361</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">5.9</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>$this->_form_id</code> <code>$wpdb->prepare()</code> ishlatilmay to'g'ridan-to'g'ri SQL so'roviga kiritiladi. <code>is_numeric()</code> tekshiruvi yetarli himoya emas.</span></div>
+        <div class="code-snippet"><pre>$result = $wpdb->get_row(
+    "SELECT COUNT(DISTINCT(p.ID)) AS count FROM `$wpdb->posts` AS p
+    LEFT JOIN `$wpdb->postmeta` AS m ON p.ID = m.post_id
+    WHERE m.meta_key = '_form_id'
+    AND m.meta_value = $this->_form_id  // ← prepare() yo'q!
+    AND p.post_status = 'publish'"
+);</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>$wpdb->prepare("... AND m.meta_value = %d ...", intval($this->_form_id))</code> ishlatish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">JIT Nonce Bypass — Muvaffaqiyatsiz Nonce'da Yangi Token Qaytarish</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/AJAX/Controllers/Submission.php</code> — satrlar 52-63</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Nonce tekshiruvi muvaffaqiyatsiz bo'lganda tizim yangi valid nonce qaytaradi. Tajovuzkor avval nonce validation endpointiga so'rov yuborib yangi nonce olib, so'ngra CSRF hujumini amalga oshirishi mumkin.</span></div>
+        <div class="code-snippet"><pre>if(!$check_ajax_referer){
+    $current_time_stamp = time();
+    $new_nonce_name = 'ninja_forms_display_nonce_' . $current_time_stamp;
+    $this->_errors['nonce'] = array(
+        'new_nonce' => wp_create_nonce($new_nonce_name),  // ← yangi nonce beriladi!
+        'nonce_ts'  => $current_time_stamp
+    );
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Nonce muvaffaqiyatsiz bo'lganda yangi nonce bermang. So'rovni rad eting.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">Open Redirect — redirect_url Validatsiyasiz</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/Actions/Redirect.php</code> — satr 54</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>redirect_url</code> hech qanday filtr yoki validatsiyadan o'tmasdan to'g'ridan-to'g'ri ishlatiladi. Merge tag'lar orqali URL manipulyatsiya va open redirect mumkin.</span></div>
+        <div class="code-snippet"><pre>$data['actions']['redirect'] = $action_settings['redirect_url'];  // ← validatsiya yo'q!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>wp_validate_redirect()</code> va <code>esc_url()</code> ishlatish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">Email Header Injection — Recipient Name Sanitize Yo'q</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/Actions/Email.php</code> — satr 291-297</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>_format_recipient()</code> metodi <code>$name</code> qiymatini tekshirmasdan header ichiga kiritadi. <code>$name</code> da <code>\n</code> bo'lsa email header injection mumkin.</span></div>
+        <div class="code-snippet"><pre>private function _format_recipient($type, $email, $name = '') {
+    if (! $name) $name = $email;
+    $recipient = "$type: $name <$email>";  // ← $name sanitize qilinmagan!
+    return $recipient;
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>$name = sanitize_text_field($name);</code> va newline belgilarni tozalash.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-low">Low</span>
+          <span class="vuln-title">CSV Export — Formula Injection</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/Actions/Email.php</code> — <code>_create_csv()</code></span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">CSV eksportda <code>=</code>, <code>+</code>, <code>-</code>, <code>@</code> bilan boshlanadigan qiymatlar uchun alohida tekshiruv yo'q. Excel formula injection mumkin.</span></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Formulaga o'xshash qiymatlar oldiga <code>'</code> (apostrof) qo'shish: <code>if (in_array($value[0], ['=','+','-','@'])) $value = "'" . $value;</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       5. CONTENT-FORGE
+  ══════════════════════════════════════ -->
+  <div class="product-section" id="cforge">
+    <div class="product-header">
+      <div>
+        <div class="product-name">Content-Forge</div>
+        <div class="product-version">v1.5.0 · WordPress Plugin · AI Content Generator</div>
+      </div>
+      <div class="product-type">WordPress Plugin</div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">CF-05 — API Key Information Disclosure</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/Api/AI.php</code> — satrlar 242, 299-303</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">AI settings REST endpoint API kalitini ochiq qaytaradi. Kalitning log'larda mask qilinmasligi va response'da ko'rinishi OpenAI/boshqa AI kalitlarini o'g'irlashga imkon beradi.</span></div>
+        <div class="code-snippet"><pre>'api_key' => isset($params['api_key'])
+    ? sanitize_text_field($params['api_key']) : '',
+// Response'da sk-xxxx... to'liq ko'rinadi!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>API kalitni response'da qaytarmaslik. Log larda masking: <code>substr($key, 0, 8).'...'</code>. Faqat <code>manage_options</code> ruxsatiga ega foydalanuvchilar ko'ra olsin.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">CF-06 — SSRF via Telemetry URL Filter</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/Telemetry_Manager.php</code> — satr 58</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Telemetry server URL'i <code>apply_filters()</code> orqali o'zgartirilishi mumkin. Boshqa plugin ushbu filterni ro'yxatga olib URL ni zararli serverga yo'naltirsa, admin email, site URL va plugin ro'yxati tashqariga chiqadi.</span></div>
+        <div class="code-snippet"><pre>$server_url = apply_filters(
+    'cforge_telemetry_server_url',
+    'https://feedio.sapayth.com/api/t/' . $token . '/'
+);
+// Hech qanday URL validatsiyasi yo'q!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Filterni olib tashlash yoki URL whitelist qo'shish. Telemetry URL ni hardcode qilish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">CF-10 — Insecure Encryption: AES-CBC + Static wp_salt Key</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/Settings/AI_Settings_Manager.php</code> — satrlar 395-413</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">API kalitlar <code>wp_salt('auth')</code> statik kalit bilan shifrlangan. IV ciphertext bilan birga saqlanadi. DB ga kirish imkoni bo'lsa, <code>wp-config.php</code> dagi salt bilan to'liq decrypt qilish mumkin.</span></div>
+        <div class="code-snippet"><pre>$key = wp_salt('auth');  // ← STATIK KALIT!
+$iv  = openssl_random_pseudo_bytes(openssl_cipher_iv_length($method));
+$encrypted = openssl_encrypt($api_key, $method, $key, 0, $iv);
+return base64_encode($encrypted . '::' . $iv);  // ← IV bilan birga saqlangan!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>AES-256-GCM ga o'tish. Key derivation uchun <code>hash_hkdf()</code>. HMAC-SHA256 authentication tag qo'shish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">CF-11 — IDOR: Taxonomy Term Deletion Without Ownership Check</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>includes/Api/Taxonomy.php</code> — <code>handle_bulk_delete()</code>, satrlar 207-250</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Bulk delete funksiyasi <code>created_by</code> yoki <code>get_current_user_id()</code> solishtiruvini qilmaydi. Istalgan Editor roli boshqa foydalanuvchi yaratgan taxonomy termlarni o'chira oladi.</span></div>
+        <div class="code-snippet"><pre>public function handle_bulk_delete($request) {
+    // created_by tekshiruvi YO'Q!
+    $term_ids = $wpdb->get_col($wpdb->prepare(
+        "SELECT object_id FROM {$table_name} WHERE data_type IN ({$placeholders})",
+        array_keys($taxonomies)
+    ));
+    $generator = new GeneratorTaxonomy(get_current_user_id());
+    $deleted_count = $generator->delete(array_map('absint', $term_ids));
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>SQL ga ownership tekshiruvi qo'shish: <code>AND created_by = %d</code> bilan <code>get_current_user_id()</code>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       6. DJANGO CMS
+  ══════════════════════════════════════ -->
+  <div class="product-section" id="django">
+    <div class="product-header">
+      <div>
+        <div class="product-name">Django CMS</div>
+        <div class="product-version">v5.1.0a1 · Python/Django</div>
+      </div>
+      <div class="product-type">Python CMS</div>
+    </div>
+
+    <div class="vuln-card open">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-critical">Critical</span>
+          <span class="vuln-title">Stored XSS — Admin Delete Confirmation (mark_safe bez escape)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>cms/admin/pageadmin.py</code> — satrlar 109-117</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">8.3 (AV:N/AC:L/PR:L/UI:R/S:C/C:H/I:H/A:L)</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Editor roli sahifa nomini <code>&lt;script&gt;...&lt;/script&gt;</code> sifatida saqlaydi. Admin o'chirishga uringanda <code>get_deleted_objects_data()</code> regex bilan HTML ichidan matn ajratib, <code>escape()</code> qilmasdan <code>mark_safe()</code> orqali render qiladi. Admin sessiyasi o'g'irlanadi.</span></div>
+        <div class="code-snippet"><pre>text = re.findall(r">(.*)<", obj)  # HTML ichidan ajratadi
+if text:
+    result.append(mark_safe("&lt;b&gt;" + text[0] + "&lt;/b&gt;"))
+#                            ^^^^ escape() YO'Q!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>from django.utils.html import escape</code> import qilib: <code>mark_safe("&lt;b&gt;" + escape(text[0]) + "&lt;/b&gt;")</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">Stored XSS — PageUrl Delete Confirmation</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>cms/admin/pageadmin.py</code> — satr 117</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.6</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>PageUrl</code> obyektlari uchun <code>item.removeprefix()</code> natijasi <code>escape()</code> qilinmasdan <code>mark_safe()</code> ga beriladi. URL path foydalanuvchi tomonidan boshqariladi.</span></div>
+        <div class="code-snippet"><pre>result.insert(0, mark_safe(item.removeprefix(
+    f"{capfirst(PageUrl._meta.verbose_name)}: "
+)))  # ← escape() yo'q!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>result.insert(0, escape(item.removeprefix(...)))</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">Stored XSS — render_exception() Sahifa Nomi Orqali</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>cms/plugin_rendering.py</code> — satrlar 525-555</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.2</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Plugin render xatoligida <code>render_exception()</code> sahifa nomini (<code>placeholder.source</code>) f-string orqali HTML ichiga joylashtiradi. Sahifa nomi foydalanuvchi tomonidan boshqariladi va escape qilinmaydi.</span></div>
+        <div class="code-snippet"><pre>message = (
+    f'{exc.__name__}: {value} when {action} "{placeholder}" on '
+    f'{placeholder_source_obj} object "{placeholder.source}"'
+    # placeholder.source = sahifa nomi = USER-CONTROLLED, escape yo'q!
+)
+heading = f'&lt;h2 class="cms-rendering-exception-title"&gt;{message}&lt;/h2&gt;'</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Barcha o'zgaruvchilarni <code>escape()</code> bilan o'rash: <code>f'... object "{escape(str(placeholder.source))}"'</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">XSS Pattern — ValidationError mark_safe()</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>cms/forms/validators.py</code> — satr 86</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>validate_url_uniqueness()</code> <code>ValidationError</code> ga <code>mark_safe(message)</code> beradi. Django formlarida <code>mark_safe(ValidationError)</code> ishlatish xavfli pattern hisoblanadi.</span></div>
+        <div class="code-snippet"><pre>raise ValidationError(mark_safe(message))  # ← xavfli pattern!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>format_html()</code> ishlatish va <code>mark_safe(ValidationError)</code> dan qochish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">URL Manipulation — Toolbar Login Double-? Bug</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>cms/views.py</code> — satrlar 244-248</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Login xatosida <code>redirect_to</code> URL ga <code>?cms_toolbar_login_error=1</code> qo'shiladi. Lekin <code>redirect_to</code> allaqachon query parametrga ega bo'lsa (<code>/page/?foo=bar</code>), natija <code>/page/?foo=bar?cms_toolbar_login_error=1</code> — yaroqsiz URL. Login xatosi ko'rsatilmaydi.</span></div>
+        <div class="code-snippet"><pre>redirect_to += '?cms_toolbar_login_error=1'  # ← ? allaqachon bo'lsa buziladi!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>urlparse</code> + <code>urlencode</code> + <code>urlunparse</code> ishlatib URL ni to'g'ri qurish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">Information Disclosure — DEBUG Traceback Editorga Ko'rinadi</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>cms/plugin_rendering.py</code> — satrlar 538-542</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>settings.DEBUG=True</code> bo'lganda Django'ning to'liq traceback HTML sifatida editing mode sahifasida ko'rsatiladi. Server path, environment variables, settings qiymatlari oshkor bo'lishi mumkin.</span></div>
+        <div class="code-snippet"><pre>if settings.DEBUG:
+    reporter = ExceptionReporter(context["request"], exc, value, traceback)
+    html = reporter.get_traceback_html()  # ← to'liq server ma'lumotlari!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Production'da <code>DEBUG=False</code> bo'lishi shart. Traceback faqat log faylga yozilishi kerak, sahifaga emas.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       7. FLUENT FORMS
+  ══════════════════════════════════════ -->
+  <div class="product-section" id="fluent">
+    <div class="product-header">
+      <div>
+        <div class="product-name">Fluent Forms</div>
+        <div class="product-version">v6.2.3 · WordPress Plugin</div>
+      </div>
+      <div class="product-type">WordPress Plugin</div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">FF-001 — Stored XSS via Custom JavaScript Field</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>app/Modules/Form/Settings/FormCssJs.php</code> — satrlar 211-213</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.2</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>fluentform_kses_js()</code> funksiyasi faqat <code>&lt;script&gt;</code> tegni olib tashlaydi, lekin inline JavaScript kodini tozalamaydi. Saqlanган kod forma joylashgan har bir sahifada barcha foydalanuvchilar brauzerida ishlaydi.</span></div>
+        <div class="code-snippet"><pre>function fluentform_kses_js($content) {
+    if (!$content) return '';
+    return preg_replace('/&lt;\/?script[^&gt;]*&gt;/is', '', $content);
+    // ← Faqat &lt;script&gt; teg, JS kodi emas!
+}
+// Chiqarish:
+echo fluentform_kses_js($customJS);  // ← to'liq kod sahifaga chiqadi</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Custom JS maydoniga faqat <code>manage_options</code> (administrator) ruxsat berishi. <code>fluentform_forms_manager</code> + <code>unfiltered_html</code> yetarli emas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">FF-002 — IP Address Spoofing via Legacy Request Class</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>vendor/wpfluent/framework/src/WPFluent/Request/Request.php</code></span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.5</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Yangi <code>Http\Request\Request</code> sinfi trusted proxy tekshiruvini amalga oshiradi. Lekin eski <code>Request\Request</code> sinfi <code>HTTP_X_FORWARDED_FOR</code> headerini tekshiruvsiz ishlatadi. <code>X-Forwarded-For: 127.0.0.1</code> bilan IP spoofing, geo-block va rate limiting bypass mumkin.</span></div>
+        <div class="code-snippet"><pre>if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $ip = $this->extractValidIp($_SERVER['HTTP_X_FORWARDED_FOR']);
+    if ($ip) return $ip;  // ← trusted proxy tekshiruvi yo'q!
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Legacy <code>Request\Request.php</code> sinfidagi <code>getIp()</code> ni yangi <code>Http\Request\InteractsWithIPTrait</code> bilan almashtirish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">FF-003 — Nonce Verification Bypassed for REST API Requests</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>app/Modules/Acl/Acl.php</code></span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.1</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>verifyNonce()</code> metodi <code>WP_DOING_AJAX</code> bo'lmasa to'xtatiladi. REST API so'rovlari nonce tekshiruvidan o'tmaydi — faqat capability tekshiruvi amalga oshiriladi.</span></div>
+        <div class="code-snippet"><pre>public static function verifyNonce($key = 'fluent_forms_admin_nonce') {
+    if (!wp_doing_ajax()) {
+        return;  // ← REST API so'rovlari bu yerda to'xtatilmaydi!
+    }
+    // ...
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>REST API so'rovlari uchun <code>X-WP-Nonce</code> header tekshiruvini qo'shish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">FF-004 — Stored XSS via iframe srcdoc Decode Bypass</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>boot/globals.php</code> — <code>fluentform_iframe_srcdoc_sanitize()</code></span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">HTML entity decode <code>wp_kses()</code> dan OLDIN amalga oshiriladi. Kodlangan payload decode qilingandan keyin kses filtriga tushadi — murakkab encoding bilan bypass mumkin.</span></div>
+        <div class="code-snippet"><pre>if (strpos($value, '&amp;') !== false) {
+    $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');  // ← avval decode
+}
+return wp_kses($value, $tags);  // ← keyin tozalash</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Decode qilmasdan to'g'ridan-to'g'ri <code>wp_kses</code> qo'llash, yoki decode + qayta wp_kses zanjiri.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">FF-005 — Rate Limiting Yo'q (Public Form DoS/Spam)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>app/Hooks/Ajax.php</code>, <code>app/Modules/SubmissionHandler/</code></span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>wp_ajax_nopriv_fluentform_submit</code> endpointiga server-side rate limiting qo'llanilmagan. CAPTCHA o'chirilgan bo'lsa, millionlab submission yuborish, DB ni to'ldirish va email flooding mumkin. RateLimiter mavjud lekin AJAX endpointlarga ulanmagan.</span></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Mavjud <code>vendor/wpfluent/framework/src/WPFluent/Http/Middleware/RateLimiter.php</code> ni AJAX endpointlarga ham ulash. Server darajasida (Nginx/Apache) rate limit qo'shish.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       8. WP FILE MANAGER
+  ══════════════════════════════════════ -->
+  <div class="product-section" id="wpfm">
+    <div class="product-header">
+      <div>
+        <div class="product-name">WP File Manager</div>
+        <div class="product-version">v8.0.4 · WordPress Plugin · 700K+ o'rnatish</div>
+      </div>
+      <div class="product-type">WordPress Plugin</div>
+    </div>
+
+    <div class="vuln-card open">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-critical">Critical</span>
+          <span class="vuln-title">VULN-01 — uploadDeny Bo'sh Array (PHP Upload Mumkin)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>file_folder_manager.php</code> — satrlar 1128-1130</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">9.1</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>uploadDeny</code> bo'sh array bo'lganda elFinder mantiqida <code>allowPutMime()</code> hech qachon <code>false</code> qaytarmaydi. MIME detection xato ko'rsatgan holatda PHP fayl yuklanishi mumkin. <code>lib/files/</code> papkasida <code>.htaccess</code> yo'q.</span></div>
+        <div class="code-snippet"><pre>'uploadDeny'  => array(),   // ← BO'SH! Hech narsa taqiqlanmaydi
+'uploadAllow' => array('image', 'text/plain'),
+'uploadOrder' => array('deny', 'allow'),
+// allowPutMime(): deny = null (bo'sh list) → hech qachon false qaytarilmaydi!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>'uploadDeny' => array('all')</code> qilib barcha fayllarni taqiqlash, keyin <code>uploadAllow</code> da faqat ruxsat berilganlarni ko'rsatish. <code>lib/files/</code> papkasida PHP ijrosini bloklash uchun <code>.htaccess</code> qo'shish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card open">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-critical">Critical</span>
+          <span class="vuln-title">VULN-02 — REST API Backup Download — Autentifikatsiyasiz</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>file_folder_manager.php</code> — satrlar 55-64</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">8.6 (AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N)</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Backup download REST endpointlari <code>__return_true</code> bilan ro'yxatga olingan — hech qanday autentifikatsiya yo'q. Ichki himoya faqat <code>base64_encode(site_url() + fm_key)</code> ga asoslangan. <code>fm_key</code> kriptografik jihatdan xavfsiz bo'lmagan <code>str_shuffle()</code> bilan yaratilgan.</span></div>
+        <div class="code-snippet"><pre>register_rest_route('v1', '/fm/backup/{backup_id}/{type}/{key}', array(
+    'methods'             => 'GET',
+    'callback'            => array($this, 'fm_download_backup'),
+    'permission_callback' => '__return_true',  // ← AUTENTIFIKATSIYA YO'Q!
+));
+// Himoya: base64_encode(site_url() . $fmkey)
+// fm_key = str_shuffle() — brute-force mumkin!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>permission_callback</code> da <code>current_user_can('manage_options')</code> tekshirish. <code>str_shuffle()</code> o'rniga <code>random_bytes(32)</code> ishlatish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-high">High</span>
+          <span class="vuln-title">VULN-04 — Path Traversal — str_replace() Bypass</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>inc/root.php</code> — satr 7</span></div>
+        <div class="field-row"><span class="field-key">CVSS v3.1</span><span class="field-val">7.1</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>str_replace()</code> asosidagi traversal himoyasi <code>....//</code> bypass bilan aylanib o'tilishi mumkin. <code>str_replace('../')</code> olib tashlaydi lekin natijadagi <code>../</code> ni qayta tekshirmaydi.</span></div>
+        <div class="code-snippet"><pre>$directory_separators = ['../', './', '..\', '.\', '..'];
+$public_path = str_replace($directory_separators, '',
+    htmlentities(trim($path.$_POST['public_path'])));
+// Bypass: ....// → str_replace('../') → ../ → traversal!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>realpath()</code> bilan yo'lni tekshirish: agar natija ruxsat berilgan base papka ichida bo'lmasa — rad etish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">VULN-06 — CSRF: mk_fm_close_fm_help (Nonce Yo'q)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>file_folder_manager.php</code> — <code>mk_fm_close_fm_help()</code>, satr 1177</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Ushbu AJAX callbackda <code>wp_verify_nonce()</code> tekshiruvi yo'q. Admin bu endpointga murojaat qilganda WordPress opsiyasi o'zgartiriladi — CSRF attack mumkin.</span></div>
+        <div class="code-snippet"><pre>public function mk_fm_close_fm_help() {
+    $what_to_do = sanitize_text_field($_POST['what_to_do']);
+    // wp_verify_nonce() TEKSHIRUVI YO'Q!
+    update_option('mk_fm_close_fm_help_c_fm', 'done');
+}</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>Barcha AJAX callbacklarda <code>wp_verify_nonce()</code> tekshiruvini qo'shish.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-medium">Medium</span>
+          <span class="vuln-title">VULN-07 — SSRF: upload_to_media_library (Zaif Sanitizatsiya)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>file_folder_manager.php</code> — satr 1316-1346</span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val"><code>upload_to_media_library()</code> faqat <code>str_replace('..', '', $image_url)</code> orqali URL ni tozalaydi. So'ngra <code>download_url($url)</code> orqali server tomonidan so'rov yuboriladi. AWS/GCP muhitida <code>http://169.254.169.254/</code> ga so'rov bilan IAM credentials o'g'irlash mumkin.</span></div>
+        <div class="code-snippet"><pre>$image_url = str_replace('..', '', $image_url);  // ← zaif sanitizatsiya
+$url = $image_url;
+// ...
+$tmp = download_url($url);  // ← server tomonidan so'rov yuboriladi!</pre></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p>URL whitelist yozish. Faqat ruxsat berilgan domenlardan yuklab olishga ruxsat berish. Loopback va metadata URL'larini bloklash.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vuln-card">
+      <div class="vuln-header" onclick="toggle(this)">
+        <div class="vuln-title-wrap">
+          <span class="badge badge-low">Low</span>
+          <span class="vuln-title">VULN-11 — Zaif Key Generatsiyasi (str_shuffle)</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="vuln-body">
+        <div class="field-row"><span class="field-key">Fayl</span><span class="field-val"><code>file_folder_manager.php</code></span></div>
+        <div class="field-row"><span class="field-key">Tavsif</span><span class="field-val">Plugin kaliti <code>str_shuffle()</code> bilan yaratiladi — bu kriptografik jihatdan xavfsiz emas. Backup download endpointi uchun ishlatiladigan bu kalit brute-force uchun zaif.</span></div>
+        <div class="fix-box">
+          <div class="fix-label">Tuzatish</div>
+          <p><code>bin2hex(random_bytes(32))</code> ishlatish.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- FOOTER -->
+  <div class="report-footer">
+    <span>Security Audit Report · 2026-06-14</span>
+    <span>Metod: Static Source Code Analysis (SAST)</span>
+    <span>8 produkt tekshirildi</span>
+  </div>
+
+</main>
+</div>
+
+<script>
+function toggle(headerEl) {
+  const card = headerEl.closest('.vuln-card');
+  card.classList.toggle('open');
+}
+</script>
+</body>
+</html>
